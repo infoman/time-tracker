@@ -29,6 +29,8 @@ gem 'dotenv-rails', '~> 2.7'
 
 # Auth system
 gem 'devise', '~> 4.7'
+gem 'devise-i18n', '~> 1.8'
+gem 'devise-bootstrap-views', '~> 1.1'
 gem 'cancancan', '~> 3.0'
 
 group :development, :test do
@@ -36,7 +38,7 @@ group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
 
   # Test tools
-  gem 'rspec-rails', '~> 3.8'
+  gem 'rspec-rails', '~> 4.0beta'
   gem 'shoulda-matchers', '~> 4.1'
   gem 'factory_bot_rails', '~> 5.0'
 end
