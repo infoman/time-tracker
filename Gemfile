@@ -27,6 +27,10 @@ gem 'bootsnap', '>= 1.4.2', require: false
 # Allow custom ENV configs
 gem 'dotenv-rails', '~> 2.7'
 
+# Auth system
+gem 'devise', '~> 4.7'
+gem 'cancancan', '~> 3.0'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
@@ -34,6 +38,7 @@ group :development, :test do
   # Test tools
   gem 'rspec-rails', '~> 3.8'
   gem 'shoulda-matchers', '~> 4.1'
+  gem 'factory_bot_rails', '~> 5.0'
 end
 
 group :development do
