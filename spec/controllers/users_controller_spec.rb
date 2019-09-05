@@ -28,16 +28,6 @@ RSpec.describe UsersController, type: :controller do
   # This should return the minimal set of attributes required to create a valid
   # User. As you add validations to User, be sure to
   # adjust the attributes here as well.
-  let(:valid_attributes) {
-    {
-      email: 'text@example.com',
-      password: 'mynewpassword'
-    }
-  }
-
-  let(:invalid_attributes) {
-    skip("Add a hash of attributes invalid for your model")
-  }
 
   # This should return the minimal set of values that should be in the session
   # in order to pass any filters (e.g. authentication) defined in
@@ -45,10 +35,14 @@ RSpec.describe UsersController, type: :controller do
   let(:valid_session) { {} }
 
   before :each do
-    @user = User.create! valid_attributes
+    @user = create :user
   end
 
   describe "GET #index" do
+    before :each do
+      create_list :user, 9
+    end
+
     it "returns a success response" do
       get :index, params: {}
 
@@ -58,6 +52,7 @@ RSpec.describe UsersController, type: :controller do
     it "generates a list of users" do
       get :index, params: {}
 
+      expect(assigns(:users).count).to eq(10)
       expect(assigns(:users)).to include(@user)
     end
   end
@@ -73,49 +68,6 @@ RSpec.describe UsersController, type: :controller do
       get :show, params: {id: @user.to_param}, session: valid_session
 
       expect(assigns(:user)).to eq(@user)
-    end
-  end
-
-  describe "GET #edit" do
-    it "returns a success response" do
-      get :edit, params: {id: @user.to_param}, session: valid_session
-
-      expect(response).to be_successful
-    end
-
-    it "has a user to edit" do
-      get :edit, params: {id: @user.to_param}, session: valid_session
-
-      expect(assigns(:user)).to eq(@user)
-    end
-  end
-
-  describe "PUT #update" do
-    context "with valid params" do
-      let(:new_attributes) {
-        skip("Add a hash of attributes valid for your model")
-      }
-
-      it "updates the requested user" do
-        put :update, params: {id: @user.to_param, user: new_attributes}, session: valid_session
-        user.reload
-
-        skip("Add assertions for updated state")
-      end
-
-      it "redirects to the user" do
-        put :update, params: {id: @user.to_param, user: valid_attributes}, session: valid_session
-
-        expect(response).to redirect_to(@user)
-      end
-    end
-
-    context "with invalid params" do
-      it "returns a success response (i.e. to display the 'edit' template)" do
-        put :update, params: {id: @user.to_param, user: invalid_attributes}, session: valid_session
-
-        expect(response).to be_successful
-      end
     end
   end
 
