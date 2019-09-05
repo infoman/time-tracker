@@ -17,11 +17,15 @@
         <td><%= link_to user.email, user %></td>
         <td><%= user.current_sign_in_at %></td>
         <td>
-          <%= link_to '', edit_user_path(user),
-            class: 'fas fa-edit text-decoration-none' %>
-          <%= link_to '', user, method: :delete,
-            data: { confirm: 'Are you sure?' },
-            class: 'fas fa-trash text-decoration-none' %>
+          <% if can? :update, user %>
+            <%= link_to '', edit_user_path(user),
+              class: 'fas fa-edit text-decoration-none' %>
+          <% end %>
+          <% if can? :destroy, user %>
+            <%= link_to '', user, method: :delete,
+              data: { confirm: 'Are you sure?' },
+              class: 'fas fa-trash text-decoration-none' %>
+          <% end %>
         </td>
       </tr>
     <% end %>

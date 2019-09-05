@@ -59,30 +59,43 @@ RSpec.describe UsersController, type: :controller do
 
   describe "GET #show" do
     it "returns a success response" do
-      get :show, params: {id: @user.to_param}, session: valid_session
+      get :show, params: {id: @user.to_param}
 
       expect(response).to be_successful
     end
 
     it "has a user to display" do
-      get :show, params: {id: @user.to_param}, session: valid_session
+      get :show, params: {id: @user.to_param}
 
       expect(assigns(:user)).to eq(@user)
     end
   end
 
   describe "DELETE #destroy" do
-    it "destroys the requested user" do
-      expect {
-        delete :destroy, params: {id: @user.to_param}, session: valid_session
-      }.to change(User, :count).by(-1)
+    describe "as an admin" do
+      login_admin
+
+      it "destroys the requested user" do
+        expect {
+          delete :destroy, params: {id: @user.to_param}
+        }.to change(User, :count).by(-1)
+      end
+
+      it "redirects to the users list" do
+        delete :destroy, params: {id: @user.to_param}
+
+        expect(response).to redirect_to(users_url)
+      end
     end
 
-    it "redirects to the users list" do
-      delete :destroy, params: {id: @user.to_param}, session: valid_session
+    describe "as a regular user" do
+      login_user
 
-      expect(response).to redirect_to(users_url)
+      it "refuses to destroy the requested user" do
+        expect {
+          delete :destroy, params: {id: @user.to_param}
+        }.to raise_error(CanCan::AccessDenied).and avoid_changing(User, :count)
+      end
     end
   end
-
 end
