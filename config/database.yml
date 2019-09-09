@@ -1,21 +1,13 @@
-# MySQL. Versions 5.5.8 and up are supported.
-#
-# Install the MySQL driver
-#   gem install mysql2
-#
-# Ensure the MySQL gem is defined in your Gemfile
-#   gem 'mysql2'
-#
-# And be sure to use new-style password hashing:
-#   https://dev.mysql.com/doc/refman/5.7/en/password-hashing.html
-#
+# PostgreSQL. Versions 9.3 and up are supported.
+
 default: &default
-  adapter: mysql2
-  encoding: utf8mb4
+  adapter: postgresql
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: <%= ENV.fetch("TIME_TRACKER_DATABASE_USER") { 'time_tracker' } %>
   password:  <%= ENV["TIME_TRACKER_DATABASE_PASSWORD"] %>
-  socket: /var/run/mysqld/mysqld.sock
+  host: <%= ENV.fetch("TIME_TRACKER_DATABASE_HOST") { 'localhost' } %>
+  port: <%= ENV.fetch("TIME_TRACKER_DATABASE_PORT") { 5432 } %>
 
 development:
   <<: *default
@@ -40,7 +32,7 @@ test:
 # On Heroku and other platform providers, you may have a full connection URL
 # available as an environment variable. For example:
 #
-#   DATABASE_URL="mysql2://myuser:mypass@localhost/somedatabase"
+#   DATABASE_URL="postgres://myuser:mypass@localhost/somedatabase"
 #
 # You can use this database configuration with:
 #
