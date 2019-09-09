@@ -33,6 +33,9 @@ gem 'devise-i18n', '~> 1.8'
 gem 'devise-bootstrap-views', '~> 1.1'
 gem 'cancancan', '~> 3.0'
 
+# Form builder
+gem 'simple_form', '~> 4.1'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]

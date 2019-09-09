@@ -42,7 +42,7 @@ RSpec.describe UsersController, type: :controller do
     it "generates a list of users" do
       get :index, params: {}
 
-      expect(assigns(:users).count).to eq(10)
+      expect(assigns(:users).count).to be >= 10
       expect(assigns(:users)).to include(@user)
     end
   end

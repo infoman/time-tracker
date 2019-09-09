@@ -1,22 +1,24 @@
 module ControllerMacros
   def login_admin
     before(:each) do
-      @request.env["devise.mapping"] = Devise.mappings[:admin]
-      sign_in FactoryBot.create(:user, :admin) # Using factory bot as an example
+      @request.env["devise.mapping"] = Devise.mappings[:user]
+      sign_in FactoryBot.create(:user, :admin)
     end
   end
 
   def login_manager
     before(:each) do
-      @request.env["devise.mapping"] = Devise.mappings[:admin]
-      sign_in FactoryBot.create(:user, :admin) # Using factory bot as an example
+      @request.env["devise.mapping"] = Devise.mappings[:user]
+      sign_in FactoryBot.create(:user, :manager)
     end
   end
 
-  def login_user
+  def login_user(owner = false)
     before(:each) do
+      user = (owner && @user.present?) ? @user : FactoryBot.create(:user)
+
       @request.env["devise.mapping"] = Devise.mappings[:user]
-      sign_in FactoryBot.create(:user)
+      sign_in user
     end
   end
 end

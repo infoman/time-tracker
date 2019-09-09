@@ -6,4 +6,10 @@ class User < ApplicationRecord
          :trackable
 
   enum role: [:user, :manager, :admin]
+
+  has_one :profile
+
+  after_create do |user|
+    user.create_profile! unless user.profile.present?
+  end
 end
