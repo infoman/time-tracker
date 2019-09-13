@@ -1,5 +1,11 @@
 <h1>Time Records for <%= link_to @user.display_name, @user %></h1>
 
+<nav class="nav">
+  <%= link_to_if can?(:create, TimeRecord), '', new_user_time_record_path(@user),
+      title: "New Time Record",
+      class: 'fas fa-plus text-decoration-none nav-link' %>
+</nav>
+
 <table class="table">
   <thead>
     <tr>
@@ -48,7 +54,3 @@
     <% end %>
   </tbody>
 </table>
-
-<br>
-
-<%= link_to 'New Time Record', new_user_time_record_path(@user) %>
