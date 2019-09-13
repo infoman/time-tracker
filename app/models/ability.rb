@@ -9,10 +9,13 @@ class Ability
       can :manage, :all
     elsif user.manager?
       can [:read, :update, :destroy], [User, Profile]
+      can :list_time_records, User, id: user.id
+      can [:manage], TimeRecord, user_id: user.id
     else
-      can :read, :all
-
-      can :update, Profile, user_id: user.id
+      can :manage, User, id: user.id
+      can [:read, :update], Profile, user_id: user.id
+      can :list_time_records, User, id: user.id
+      can [:manage], TimeRecord, user_id: user.id
     end
 
     # Define abilities for the passed in user here. For example:

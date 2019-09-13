@@ -5,3 +5,9 @@ $fa-font-path: '~@fortawesome/fontawesome-free/webfonts';
 @import "~@fortawesome/fontawesome-free/scss/brands";
 
 @import '~bootstrap/dist/css/bootstrap';
+
+.time-record-details {
+  th[scope="row"] {
+    width: 10em;
+  }
+}

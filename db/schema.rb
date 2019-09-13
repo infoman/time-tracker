@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_09_05_145348) do
+ActiveRecord::Schema.define(version: 2019_09_11_002158) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -22,6 +22,16 @@ ActiveRecord::Schema.define(version: 2019_09_05_145348) do
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["user_id"], name: "index_profiles_on_user_id"
+  end
+
+  create_table "time_records", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.date "date", null: false
+    t.decimal "hours", precision: 4, scale: 2, default: "0.0", null: false
+    t.text "description"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["user_id"], name: "index_time_records_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -43,4 +53,5 @@ ActiveRecord::Schema.define(version: 2019_09_05_145348) do
   end
 
   add_foreign_key "profiles", "users", on_delete: :cascade
+  add_foreign_key "time_records", "users", on_delete: :cascade
 end

@@ -2,6 +2,11 @@ Rails.application.routes.draw do
   devise_for :users
   resources :users, only: [:index, :show, :destroy] do
     resource :profile
+    resources :time_records do
+      get ':date', action: :new, as: :dated, on: :new
+      collection do
+      end
+    end
   end
 
   root to: 'users#index'

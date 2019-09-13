@@ -1,0 +1,26 @@
+<table class="table time-record-details">
+  <tbody>
+    <tr>
+      <th scope="row">User:</th>
+      <td><%= link_to @time_record.user.display_name, @time_record.user %></td>
+    </tr>
+
+    <tr>
+      <th scope="row">Date:</th>
+      <td><%= @time_record.date %></td>
+    </tr>
+
+    <tr>
+      <th scope="row">Hours:</th>
+      <td><%= @time_record.hours %></td>
+    </tr>
+
+    <tr>
+      <th scope="row">Description:</th>
+      <td><%= simple_format @time_record.description %></td>
+    </tr>
+  </tbody>
+</table>
+
+<%= link_to 'Edit', edit_user_time_record_path(@user, @time_record) %> |
+<%= link_to 'Back', user_time_records_path(@user) %>

@@ -1,0 +1,54 @@
+<h1>Time Records for <%= link_to @user.display_name, @user %></h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th>Hours</th>
+      <th>Description</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @dated_records.each do |date, time_records| %>
+      <% total_hours = time_records.sum {|record| record.hours } %>
+      <% header_class = (total_hours >= @user&.profile&.expected_hours) ? 'success' : 'danger' %>
+
+      <tr class="bg-<%= header_class %> text-light time-total">
+        <th scope="row"><%= total_hours %></th>
+        <td>
+          <strong>Total at</strong>
+          <%= date %>
+        </td>
+        <td>
+          <%= link_to_if can?(:create, TimeRecord), '', dated_new_user_time_record_path(@user, date),
+              title: "New record at #{date}",
+              class: 'fas fa-plus text-decoration-none text-light' %>
+        </td>
+      </tr>
+      <% time_records.each do |time_record| %>
+        <tr class="time-record">
+          <td><%= time_record.hours %></td>
+          <td>
+            <%= truncate time_record.description.lines.first.strip, length: 80, separator: /\s/ %>
+            <%= link_to '(more)', [@user, time_record] %>
+          </td>
+          <td>
+            <%= link_to_if can?(:destroy, time_record), '', edit_user_time_record_path(@user, time_record),
+              title: 'Edit',
+              class: 'fas fa-edit text-decoration-none' %>
+            <%= link_to_if can?(:destroy, time_record), '', [@user, time_record],
+              title: 'Destroy',
+              method: :delete,
+              data: { confirm: 'Are you sure?' },
+              class: 'fas fa-trash text-decoration-none' %>
+          </td>
+        </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Time Record', new_user_time_record_path(@user) %>

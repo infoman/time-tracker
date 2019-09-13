@@ -13,7 +13,7 @@ module ControllerMacros
     end
   end
 
-  def login_user(owner = false)
+  def login_user(owner: false)
     before(:each) do
       user = (owner && @user.present?) ? @user : FactoryBot.create(:user)
 

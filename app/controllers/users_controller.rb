@@ -4,7 +4,7 @@ class UsersController < ApplicationController
   # GET /users
   # GET /users.json
   def index
-    @users = @users.includes :profile
+    @users = @users.includes(:profile).order(:id)
   end
 
   # GET /users/1

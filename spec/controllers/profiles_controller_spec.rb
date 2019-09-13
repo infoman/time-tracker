@@ -94,7 +94,7 @@ RSpec.describe ProfilesController, type: :controller do
       end
 
       context "with their own profile" do
-        login_user(true)
+        login_user(owner: true)
 
         include_examples "with authorization"
       end
@@ -133,7 +133,7 @@ RSpec.describe ProfilesController, type: :controller do
 
       context "as a regular user" do
         context "with their own profile" do
-          login_user(true)
+          login_user(owner: true)
 
           include_examples "with authorization"
         end
