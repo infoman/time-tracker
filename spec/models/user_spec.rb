@@ -14,9 +14,15 @@ RSpec.describe User, type: :model do
   end
 
   it "should have a profile after creation" do
-    user = create :user
+    user = User.create attributes_for(:user)
 
     expect(user.profile).to be_a Profile
+  end
+
+  it "should be a regular user by default" do
+    user = User.new
+
+    expect(user.role.to_sym).to eq(:user)
   end
 
   describe "#display_name" do
