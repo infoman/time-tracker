@@ -105,9 +105,47 @@ RSpec.describe UsersController, type: :controller do
         login_user
 
         it "refuses to show user" do
+          bypass_rescue
+
           expect {
             get :show, params: {id: @user.to_param}
           }.to raise_error(CanCan::AccessDenied)
+        end
+      end
+    end
+  end
+
+  describe "PATCH #set_role" do
+    describe "as an admin" do
+      login_admin
+
+      it "updates role of the selected user" do
+        expect {
+          patch :set_role, params: { id: @user.to_param, user: { role: :manager } }
+
+          @user.reload
+        }.to change(@user, :role).to('manager')
+      end
+
+      it "refuses to demote themselves" do
+        expect {
+          patch :set_role, params: { id: subject.current_user.to_param, user: { role: :manager } }
+        }.to avoid_changing(subject.current_user, :role)
+      end
+    end
+
+    [:user, :manager].each do |role|
+      context "as a #{role.to_s}" do
+        before :each do
+          @user.update_attribute :role, role
+        end
+
+        login_user(owner: true)
+
+        it "refuses to change role" do
+          expect {
+            patch :set_role, params: { id: @user.to_param, user: { role: :admin } }
+          }.to avoid_changing(@user, :role)
         end
       end
     end
@@ -144,6 +182,8 @@ RSpec.describe UsersController, type: :controller do
       login_user
 
       it "refuses to destroy the requested user" do
+        bypass_rescue
+
         expect {
           delete :destroy, params: {id: @user.to_param}
         }.to raise_error(CanCan::AccessDenied).and avoid_changing(User, :count)

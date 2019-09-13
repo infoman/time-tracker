@@ -43,6 +43,7 @@ gem 'cancancan', '~> 3.0'
 
 # Form builder
 gem 'simple_form', '~> 4.1'
+gem 'enum_help'
 
 # A bit of fun
 gem 'identicon'

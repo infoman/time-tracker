@@ -79,6 +79,8 @@ RSpec.describe ProfilesController, type: :controller do
         login_user
 
         it "refuses to edit the requested profile" do
+          bypass_rescue
+
           expect {
             get :edit, params: {user_id: @user.to_param}
           }.to raise_error(CanCan::AccessDenied)
@@ -134,6 +136,8 @@ RSpec.describe ProfilesController, type: :controller do
           login_user
 
           it "refuses to update the requested profile" do
+            bypass_rescue
+
             expect {
               put :update, params: {user_id: @user.to_param, profile: valid_attributes}
             }.to raise_error(CanCan::AccessDenied).and avoid_changing(@profile, :attributes)

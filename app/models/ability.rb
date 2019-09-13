@@ -12,7 +12,7 @@ class Ability
       can :list_time_records, User, id: user.id
       can [:manage], TimeRecord, user_id: user.id
     else
-      can :manage, User, id: user.id
+      can [:read, :update, :destroy], User, id: user.id
       can [:read, :update], Profile, user_id: user.id
       can :list_time_records, User, id: user.id
       can [:manage], TimeRecord, user_id: user.id

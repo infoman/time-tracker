@@ -114,6 +114,8 @@ RSpec.describe TimeRecordsController, type: :controller do
           login_user
 
           it "refuses to list their records" do
+            bypass_rescue
+
             expect {
               get :index, params: { user_id: @user.to_param }
             }.to raise_error(CanCan::AccessDenied)
@@ -160,6 +162,8 @@ RSpec.describe TimeRecordsController, type: :controller do
           login_user
 
           it "refuses to show their records" do
+            bypass_rescue
+
             expect {
               get :show, params: { id: @time_record.to_param, user_id: @user.to_param }
             }.to raise_error(CanCan::AccessDenied)
@@ -218,6 +222,8 @@ RSpec.describe TimeRecordsController, type: :controller do
           login_user
 
           it "refuses to make a new record" do
+            bypass_rescue
+
             expect {
               get :new, params: { time_record: valid_attributes, user_id: @user.to_param }
             }.to raise_error(CanCan::AccessDenied)
@@ -264,6 +270,8 @@ RSpec.describe TimeRecordsController, type: :controller do
           login_user
 
           it "refuses to edit their records" do
+            bypass_rescue
+
             expect {
               get :edit, params: { id: @time_record.to_param, user_id: @user.to_param }
             }.to raise_error(CanCan::AccessDenied)
@@ -311,6 +319,8 @@ RSpec.describe TimeRecordsController, type: :controller do
             login_user
 
             it "refuses to create a new record" do
+              bypass_rescue
+
               expect {
                 post :create, params: { time_record: valid_attributes, user_id: @user.to_param }
               }.to raise_error(CanCan::AccessDenied).and avoid_changing(TimeRecord, :count)
@@ -380,6 +390,8 @@ RSpec.describe TimeRecordsController, type: :controller do
             login_user
 
             it "refuses to update their records" do
+              bypass_rescue
+
               expect {
                 put :update, params: { id: @time_record.to_param,
                   time_record: valid_attributes, user_id: @user.to_param }
@@ -444,6 +456,8 @@ RSpec.describe TimeRecordsController, type: :controller do
           login_user
 
           it "refuses to delete their records" do
+            bypass_rescue
+
             expect {
               delete :destroy, params: {id: @time_record.to_param, user_id: @user.to_param}
             }.to raise_error(CanCan::AccessDenied).and avoid_changing(TimeRecord, :count)
