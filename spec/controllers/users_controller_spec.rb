@@ -29,42 +29,92 @@ RSpec.describe UsersController, type: :controller do
   end
 
   describe "GET #index" do
-    before :each do
-      create_list :user, 9
-    end
-
     it "returns a success response" do
       get :index, params: {}
 
       expect(response).to be_successful
     end
 
-    it "generates a list of users" do
-      get :index, params: {}
+    [:admin, :manager].each do |role|
+      context "as #{role}" do
+        before :each do
+          @user.update_attribute :role, role
+        end
 
-      expect(assigns(:users).count).to be >= 10
-      expect(assigns(:users)).to include(@user)
+        login_user(owner: true)
+
+        it "generates a list of users" do
+          create_list :user, 9
+
+          get :index, params: {}
+
+          expect(assigns(:users).count).to be >= 10
+          expect(assigns(:users)).to include(@user)
+        end
+      end
+    end
+
+    context "as a regular user" do
+      login_user(owner: true)
+
+      it "make only own user visible" do
+        create_list :user, 9
+
+        get :index, params: {}
+
+        expect(assigns(:users)).to eq([@user])
+      end
     end
   end
 
   describe "GET #show" do
-    it "returns a success response" do
-      get :show, params: {id: @user.to_param}
+    shared_examples "with authorization" do
+      it "returns a success response" do
+        get :show, params: {id: @user.to_param}
 
-      expect(response).to be_successful
+        expect(response).to be_successful
+      end
+
+      it "has a user to display" do
+        get :show, params: {id: @user.to_param}
+
+        expect(assigns(:user)).to eq(@user)
+      end
     end
 
-    it "has a user to display" do
-      get :show, params: {id: @user.to_param}
+    context "as an admin" do
+      login_admin
 
-      expect(assigns(:user)).to eq(@user)
+      include_examples "with authorization"
+    end
+
+    context "as a manager" do
+      login_manager
+
+      include_examples "with authorization"
+    end
+
+    context "as a regular user" do
+      context "with their own account" do
+        login_user(owner: true)
+
+        include_examples "with authorization"
+      end
+
+      context "with another user's account" do
+        login_user
+
+        it "refuses to show user" do
+          expect {
+            get :show, params: {id: @user.to_param}
+          }.to raise_error(CanCan::AccessDenied)
+        end
+      end
     end
   end
 
   describe "DELETE #destroy" do
-    describe "as an admin" do
-      login_admin
-
+    shared_examples "with authorization" do
       it "destroys the requested user" do
         expect {
           delete :destroy, params: {id: @user.to_param}
@@ -76,6 +126,18 @@ RSpec.describe UsersController, type: :controller do
 
         expect(response).to redirect_to(users_url)
       end
+    end
+
+    describe "as an admin" do
+      login_admin
+
+      include_examples "with authorization"
+    end
+
+    describe "as a manager" do
+      login_manager
+
+      include_examples "with authorization"
     end
 
     describe "as a regular user" do
