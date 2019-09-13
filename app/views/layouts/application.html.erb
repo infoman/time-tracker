@@ -63,7 +63,7 @@
 
     <%= render 'layouts/messages' %>
 
-    <main class="container">
+    <main class="container" id="page-<%= controller.controller_name %>-<%= controller.action_name %>">
       <%= yield %>
     </main>
   </body>
