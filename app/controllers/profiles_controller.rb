@@ -1,12 +1,6 @@
 class ProfilesController < ApplicationController
   before_action :authenticate_user!, only: [:edit, :update]
-  before_action :set_profile, only: [:show, :edit, :update]
-
-  # GET /profiles/1
-  # GET /profiles/1.json
-  def show
-    authorize! :read, @profile
-  end
+  before_action :set_profile, only: [:edit, :update]
 
   # GET /profiles/1/edit
   def edit
@@ -20,7 +14,7 @@ class ProfilesController < ApplicationController
 
     respond_to do |format|
       if @profile.update(profile_params)
-        format.html { redirect_to user_profile_path(@profile.user_id), notice: 'Profile was successfully updated.' }
+        format.html { redirect_to user_path(@profile.user_id), notice: 'Profile was successfully updated.' }
         format.json { render :show, status: :ok, location: @profile }
       else
         format.html { render :edit }

@@ -4,8 +4,8 @@
   <thead>
     <tr>
       <th>#</th>
-      <th>Email</th>
-      <th>Sign in date</th>
+      <th>Display name</th>
+      <th>Logged in at</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -21,12 +21,6 @@
             <% else %>
               <%= user.email %>
             <% end %>
-          <% end %>
-          <% if user.profile.present? %>
-            (<%= link_to user_profile_path(user) do %>
-              <i class="fas fa-id-badge"></i>
-              Profile
-            <% end %>)
           <% end %>
         </td>
         <td><%= user.current_sign_in_at %></td>

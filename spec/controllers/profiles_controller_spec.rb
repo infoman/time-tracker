@@ -47,14 +47,6 @@ RSpec.describe ProfilesController, type: :controller do
     @profile = @user.profile
   end
 
-  describe "GET #show" do
-    it "returns a success response" do
-      get :show, params: {user_id: @user.to_param}
-
-      expect(response).to be_successful
-    end
-  end
-
   describe "GET #edit" do
     shared_examples "with authorization" do
       it "returns a success response" do
@@ -111,10 +103,10 @@ RSpec.describe ProfilesController, type: :controller do
         expect(@profile.expected_hours).to eq(valid_attributes[:expected_hours])
       end
 
-      it "redirects to the profile" do
+      it "redirects to the user page" do
         put :update, params: {user_id: @user.to_param, profile: valid_attributes}
 
-        expect(response).to redirect_to(user_profile_path(user_id: @user.id))
+        expect(response).to redirect_to(user_path(id: @user.id))
       end
     end
 
@@ -144,7 +136,7 @@ RSpec.describe ProfilesController, type: :controller do
           it "refuses to update the requested profile" do
             expect {
               put :update, params: {user_id: @user.to_param, profile: valid_attributes}
-            }.to raise_error(CanCan::AccessDenied)
+            }.to raise_error(CanCan::AccessDenied).and avoid_changing(@profile, :attributes)
           end
         end
       end

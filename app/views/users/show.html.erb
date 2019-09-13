@@ -1,12 +1,31 @@
-<p>
-  <strong>Email:</strong>
-  <%= @user.email %>
-</p>
+<h1>
+  <%= image_tag Identicon.data_url_for(@user.email, 48) %>
+  <%= @user.display_name %>
+</h1>
 
-<p>
-  <strong>Current sign in at:</strong>
-  <%= @user.current_sign_in_at %>
-</p>
+<table class="table time-record-details">
+  <tbody>
+    <tr>
+      <th scope="row">Full name:</th>
+      <td><%= @user.profile.full_name.present? ? @user.profile.full_name : '<undefined>' %></td>
+    </tr>
+
+    <tr>
+      <th scope="row">E-mail:</th>
+      <td><%= @user.email %></td>
+    </tr>
+
+    <tr>
+      <th scope="row">Expected hours:</th>
+      <td><%= @user.profile.expected_hours %></td>
+    </tr>
+
+    <tr>
+      <th scope="row">Logged in at:</th>
+      <td><%= @user.current_sign_in_at %></td>
+    </tr>
+  </tbody>
+</table>
 
 <%= link_to 'Edit profile', edit_user_profile_path(@user) %> |
 <%= link_to 'Spent hours', user_time_records_path(@user) %> |
