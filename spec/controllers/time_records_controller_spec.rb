@@ -64,6 +64,32 @@ RSpec.describe TimeRecordsController, type: :controller do
 
         expect(assigns(:dated_records)).to include(Date.today, Date.yesterday)
       end
+
+      context "filters time records by date" do
+        before :each do
+          @past_records    = create_list :time_record, 2, user: @user, date: '2017-01-25'
+          @present_records = create_list :time_record, 2, user: @user, date: '2018-01-25'
+          @future_records  = create_list :time_record, 2, user: @user, date: '2019-01-25'
+        end
+
+        it "before requested date" do
+          get :index, params: { user_id: @user.id, date_filter: { to: '2018-01-25' } }
+
+          expect(assigns(:time_records)).to include(*@past_records, *@present_records).and exclude(*@future_records)
+        end
+
+        it "after requested date" do
+          get :index, params: { user_id: @user.id, date_filter: { from: '2018-01-25' } }
+
+          expect(assigns(:time_records)).to include(*@present_records, *@future_records).and exclude(*@past_records)
+        end
+
+        it "in requested date range" do
+          get :index, params: { user_id: @user.id, date_filter: { from: '2018-01-01', to: '2019-01-01' } }
+
+          expect(assigns(:time_records)).to include(*@present_records).and exclude(*@past_records, *@future_records)
+        end
+      end
     end
 
     context "as an admin" do

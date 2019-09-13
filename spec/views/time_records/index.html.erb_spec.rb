@@ -5,6 +5,8 @@ RSpec.describe "time_records/index", type: :view do
     @user = assign :user, create(:user)
     @user.profile.update_attribute :expected_hours, 3
 
+    @filter = DateFilter.new
+
     # 2 records with 1.11 hours each is less than 3 hours
     @today_records = create_list(:time_record, 2, user: @user, date: Date.today)
 

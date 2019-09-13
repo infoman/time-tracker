@@ -1,10 +1,32 @@
 <h1>Time Records for <%= link_to @user.display_name, @user %></h1>
 
-<nav class="nav">
-  <%= link_to_if can?(:create, TimeRecord), '', new_user_time_record_path(@user),
-      title: "New Time Record",
-      class: 'fas fa-plus text-decoration-none nav-link' %>
-</nav>
+<div class="d-flex flex-row justify-content-between mb-3">
+  <%= simple_form_for @filter,
+    url: user_time_records_path(@user),
+    method: :get,
+    html: { class: 'form-inline' },
+    wrapper: :inline_form do |f| %>
+
+    <%= f.label 'Filter records', class: 'mx-1' %>
+
+    <%= f.label :from, 'from', class: 'mx-1' %>
+    <%= f.input :from, as: :date, html5: true,
+      wrapper: :inline_form,
+      label: false,
+      input_html: { step: 1, class: 'mx-1' } %>
+
+    <%= f.label :to, 'to', class: 'mx-1' %>
+    <%= f.input :to, as: :date, html5: true,
+      wrapper: :inline_form,
+      label: false,
+      input_html: { step: 1, class: 'mx-1' } %>
+
+    <%= f.button :submit, 'Filter' %>
+  <% end %>
+
+  <%= link_to_if can?(:create, TimeRecord), 'New Time Record', new_user_time_record_path(@user),
+      class: 'nav-link' %>
+</div>
 
 <table class="table">
   <thead>

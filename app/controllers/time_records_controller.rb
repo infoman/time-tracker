@@ -5,10 +5,13 @@ class TimeRecordsController < ApplicationController
   # GET /time_records
   # GET /time_records.json
   def index
-    @time_records = @user.time_records.order({date: :desc, created_at: :desc})
-    logger.debug current_user.inspect
-    logger.debug @user.inspect
     authorize! :list_time_records, @user
+    @filter = DateFilter.new date_filter_params
+
+    @time_records = @user.time_records.order({date: :desc, created_at: :desc})
+    @time_records = @time_records.where('date >= ?', @filter.from) if @filter.from.present?
+    @time_records = @time_records.where('date <= ?', @filter.to) if @filter.to.present?
+
     @dated_records = @time_records.group_by {|r| r.date}
   end
 
@@ -89,5 +92,9 @@ class TimeRecordsController < ApplicationController
     # Never trust parameters from the scary internet, only allow the white list through.
     def time_record_params
       params.require(:time_record).permit(:date, :hours, :description)
+    end
+
+    def date_filter_params
+      params.fetch(:date_filter, {}).permit(:from, :to)
     end
 end
