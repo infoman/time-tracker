@@ -1,0 +1,6 @@
+<h1>Welcome to time tracker</h1>
+<% if signed_in? %>
+  <p>Hello <%= link_to current_user.display_name, current_user %>
+<% else %>
+  <p>Please <%= link_to 'sign in', new_user_session_path %> to continue</p>
+<% end %>
