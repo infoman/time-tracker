@@ -14,10 +14,6 @@ class UsersController < ApplicationController
 
   # PATCH /users/1/set_role
   def set_role
-    logger.debug @user.inspect
-    logger.debug current_user.inspect
-    logger.debug @user == current_user
-
     if @user == current_user
       redirect_back(fallback_location: :root,
         alert: 'You cannot demote yourself, ask another admin to do so' ) and return
