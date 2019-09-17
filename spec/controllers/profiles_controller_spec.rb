@@ -24,6 +24,7 @@ require 'rails_helper'
 # `rails-controller-testing` gem.
 
 RSpec.describe ProfilesController, type: :controller do
+  it { should use_before_action(:authenticate_user!) }
 
   # This should return the minimal set of attributes required to create a valid
   # Profile. As you add validations to Profile, be sure to
@@ -62,6 +63,16 @@ RSpec.describe ProfilesController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to edit the requested profile" do
+        bypass_rescue
+
+        expect {
+          get :edit, params: {user_id: @user.to_param}
+        }.to raise_error(CanCan::AccessDenied)
+      end
+    end
+
     context "as an admin" do
       login_admin
 
@@ -78,13 +89,7 @@ RSpec.describe ProfilesController, type: :controller do
       context "with another user's profile" do
         login_user
 
-        it "refuses to edit the requested profile" do
-          bypass_rescue
-
-          expect {
-            get :edit, params: {user_id: @user.to_param}
-          }.to raise_error(CanCan::AccessDenied)
-        end
+        include_examples "unauthorized"
       end
 
       context "with their own profile" do
@@ -112,6 +117,16 @@ RSpec.describe ProfilesController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to update the requested profile" do
+        bypass_rescue
+
+        expect {
+          put :update, params: {user_id: @user.to_param, profile: valid_attributes}
+        }.to raise_error(CanCan::AccessDenied).and avoid_changing(@profile, :attributes)
+      end
+    end
+
     context "with valid params" do
       context "as an admin" do
         login_admin
@@ -135,13 +150,7 @@ RSpec.describe ProfilesController, type: :controller do
         context "with another user's profile" do
           login_user
 
-          it "refuses to update the requested profile" do
-            bypass_rescue
-
-            expect {
-              put :update, params: {user_id: @user.to_param, profile: valid_attributes}
-            }.to raise_error(CanCan::AccessDenied).and avoid_changing(@profile, :attributes)
-          end
+          include_examples "unauthorized"
         end
       end
     end

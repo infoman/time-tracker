@@ -24,6 +24,8 @@ require 'rails_helper'
 # `rails-controller-testing` gem.
 
 RSpec.describe TimeRecordsController, type: :controller do
+  it { should use_before_action(:authenticate_user!) }
+
   # This should return the minimal set of attributes required to create a valid
   # TimeRecord. As you add validations to TimeRecord, be sure to
   # adjust the attributes here as well.
@@ -92,35 +94,47 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to list their records" do
+        bypass_rescue
+
+        expect {
+          get :index, params: { user_id: @user.to_param }
+        }.to raise_error(CanCan::AccessDenied)
+      end
+    end
+
     context "as an admin" do
       login_admin
 
       include_examples "with authorization"
     end
 
-    [:user, :manager].each do |role|
-      context "as a #{role.to_s}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
+    context "as a manager" do
+      context "for themselves" do
+        login_manager(owner: true)
 
-        context "for themselves" do
-          login_user(owner: true)
+        include_examples "with authorization"
+      end
 
-          include_examples "with authorization"
-        end
+      context "for other users" do
+        login_manager
 
-        context "for other users" do
-          login_user
+        include_examples "unauthorized"
+      end
+    end
 
-          it "refuses to list their records" do
-            bypass_rescue
+    context "as a regular user" do
+      context "for themselves" do
+        login_user(owner: true)
 
-            expect {
-              get :index, params: { user_id: @user.to_param }
-            }.to raise_error(CanCan::AccessDenied)
-          end
-        end
+        include_examples "with authorization"
+      end
+
+      context "for other users" do
+        login_user
+
+        include_examples "unauthorized"
       end
     end
   end
@@ -140,35 +154,47 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to show their records" do
+        bypass_rescue
+
+        expect {
+          get :show, params: { id: @time_record.to_param, user_id: @user.to_param }
+        }.to raise_error(CanCan::AccessDenied)
+      end
+    end
+
     context "as an admin" do
       login_admin
 
       include_examples "with authorization"
     end
 
-    [:user, :manager].each do |role|
-      context "as a #{role.to_s}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
+    context "as a manager" do
+      context "for themselves" do
+        login_manager(owner: true)
 
-        context "for themselves" do
-          login_user(owner: true)
+        include_examples "with authorization"
+      end
 
-          include_examples "with authorization"
-        end
+      context "for other users" do
+        login_manager
 
-        context "for other users" do
-          login_user
+        include_examples "unauthorized"
+      end
+    end
 
-          it "refuses to show their records" do
-            bypass_rescue
+    context "as a regular user" do
+      context "for themselves" do
+        login_user(owner: true)
 
-            expect {
-              get :show, params: { id: @time_record.to_param, user_id: @user.to_param }
-            }.to raise_error(CanCan::AccessDenied)
-          end
-        end
+        include_examples "with authorization"
+      end
+
+      context "for other users" do
+        login_user
+
+        include_examples "unauthorized"
       end
     end
   end
@@ -200,35 +226,47 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to make a new record" do
+        bypass_rescue
+
+        expect {
+          get :new, params: { time_record: valid_attributes, user_id: @user.to_param }
+        }.to raise_error(CanCan::AccessDenied)
+      end
+    end
+
     context "as an admin" do
       login_admin
 
       include_examples "with authorization"
     end
 
-    [:user, :manager].each do |role|
-      context "as a #{role.to_s}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
+    context "as a manager" do
+      context "for themselves" do
+        login_manager(owner: true)
 
-        context "for themselves" do
-          login_user(owner: true)
+        include_examples "with authorization"
+      end
 
-          include_examples "with authorization"
-        end
+      context "for other users" do
+        login_manager
 
-        context "for other users" do
-          login_user
+        include_examples "unauthorized"
+      end
+    end
 
-          it "refuses to make a new record" do
-            bypass_rescue
+    context "as a regular user" do
+      context "for themselves" do
+        login_user(owner: true)
 
-            expect {
-              get :new, params: { time_record: valid_attributes, user_id: @user.to_param }
-            }.to raise_error(CanCan::AccessDenied)
-          end
-        end
+        include_examples "with authorization"
+      end
+
+      context "for other users" do
+        login_user
+
+        include_examples "unauthorized"
       end
     end
   end
@@ -248,35 +286,47 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to edit their records" do
+        bypass_rescue
+
+        expect {
+          get :edit, params: { id: @time_record.to_param, user_id: @user.to_param }
+        }.to raise_error(CanCan::AccessDenied)
+      end
+    end
+
     context "as an admin" do
       login_admin
 
       include_examples "with authorization"
     end
 
-    [:user, :manager].each do |role|
-      context "as a #{role.to_s}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
+    context "as a manager" do
+      context "for themselves" do
+        login_manager(owner: true)
 
-        context "for themselves" do
-          login_user(owner: true)
+        include_examples "with authorization"
+      end
 
-          include_examples "with authorization"
-        end
+      context "for other users" do
+        login_manager
 
-        context "for other users" do
-          login_user
+        include_examples "unauthorized"
+      end
+    end
 
-          it "refuses to edit their records" do
-            bypass_rescue
+    context "as a regular user" do
+      context "for themselves" do
+        login_user(owner: true)
 
-            expect {
-              get :edit, params: { id: @time_record.to_param, user_id: @user.to_param }
-            }.to raise_error(CanCan::AccessDenied)
-          end
-        end
+        include_examples "with authorization"
+      end
+
+      context "for other users" do
+        login_user
+
+        include_examples "unauthorized"
       end
     end
   end
@@ -296,6 +346,16 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to create a new record" do
+        bypass_rescue
+
+        expect {
+          post :create, params: { time_record: valid_attributes, user_id: @user.to_param }
+        }.to raise_error(CanCan::AccessDenied).and avoid_changing(TimeRecord, :count)
+      end
+    end
+
     context "with valid params" do
       context "as an admin" do
         login_admin
@@ -303,29 +363,31 @@ RSpec.describe TimeRecordsController, type: :controller do
         include_examples "with authorization"
       end
 
-      [:user, :manager].each do |role|
-        context "as a #{role.to_s}" do
-          before :each do
-            @user.update_attribute :role, role
-          end
+      context "as a manager" do
+        context "for themselves" do
+          login_manager(owner: true)
 
-          context "for themselves" do
-            login_user(owner: true)
+          include_examples "with authorization"
+        end
 
-            include_examples "with authorization"
-          end
+        context "for other users" do
+          login_manager
 
-          context "for other users" do
-            login_user
+          include_examples "unauthorized"
+        end
+      end
 
-            it "refuses to create a new record" do
-              bypass_rescue
+      context "as a regular user" do
+        context "for themselves" do
+          login_user(owner: true)
 
-              expect {
-                post :create, params: { time_record: valid_attributes, user_id: @user.to_param }
-              }.to raise_error(CanCan::AccessDenied).and avoid_changing(TimeRecord, :count)
-            end
-          end
+          include_examples "with authorization"
+        end
+
+        context "for other users" do
+          login_user
+
+          include_examples "unauthorized"
         end
       end
     end
@@ -367,6 +429,17 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to update their records" do
+        bypass_rescue
+
+        expect {
+          put :update, params: { id: @time_record.to_param,
+            time_record: valid_attributes, user_id: @user.to_param }
+        }.to raise_error(CanCan::AccessDenied).and avoid_changing(@time_record, :attributes)
+      end
+    end
+
     context "with valid params" do
       context "as an admin" do
         login_admin
@@ -374,30 +447,31 @@ RSpec.describe TimeRecordsController, type: :controller do
         include_examples "with authorization"
       end
 
-      [:user, :manager].each do |role|
-        context "as a #{role.to_s}" do
-          before :each do
-            @user.update_attribute :role, role
-          end
+      context "as a manager" do
+        context "for themselves" do
+          login_manager(owner: true)
 
-          context "for themselves" do
-            login_user(owner: true)
+          include_examples "with authorization"
+        end
 
-            include_examples "with authorization"
-          end
+        context "for other users" do
+          login_manager
 
-          context "for other users" do
-            login_user
+          include_examples "unauthorized"
+        end
+      end
 
-            it "refuses to update their records" do
-              bypass_rescue
+      context "as a regular user" do
+        context "for themselves" do
+          login_user(owner: true)
 
-              expect {
-                put :update, params: { id: @time_record.to_param,
-                  time_record: valid_attributes, user_id: @user.to_param }
-              }.to raise_error(CanCan::AccessDenied).and avoid_changing(@time_record, :attributes)
-            end
-          end
+          include_examples "with authorization"
+        end
+
+        context "for other users" do
+          login_user
+
+          include_examples "unauthorized"
         end
       end
     end
@@ -434,35 +508,47 @@ RSpec.describe TimeRecordsController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to delete their records" do
+        bypass_rescue
+
+        expect {
+          delete :destroy, params: {id: @time_record.to_param, user_id: @user.to_param}
+        }.to raise_error(CanCan::AccessDenied).and avoid_changing(TimeRecord, :count)
+      end
+    end
+
     context "as an admin" do
       login_admin
 
       include_examples "with authorization"
     end
 
-    [:user, :manager].each do |role|
-      context "as a #{role.to_s}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
+    context "as a manager" do
+      context "for themselves" do
+        login_manager(owner: true)
 
-        context "for themselves" do
-          login_user(owner: true)
+        include_examples "with authorization"
+      end
 
-          include_examples "with authorization"
-        end
+      context "for other users" do
+        login_manager
 
-        context "for other users" do
-          login_user
+        include_examples "unauthorized"
+      end
+    end
 
-          it "refuses to delete their records" do
-            bypass_rescue
+    context "as a regular user" do
+      context "for themselves" do
+        login_user(owner: true)
 
-            expect {
-              delete :destroy, params: {id: @time_record.to_param, user_id: @user.to_param}
-            }.to raise_error(CanCan::AccessDenied).and avoid_changing(TimeRecord, :count)
-          end
-        end
+        include_examples "with authorization"
+      end
+
+      context "for other users" do
+        login_user
+
+        include_examples "unauthorized"
       end
     end
   end

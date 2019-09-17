@@ -24,39 +24,31 @@ require 'rails_helper'
 # `rails-controller-testing` gem.
 
 RSpec.describe UsersController, type: :controller do
+  it { should use_before_action(:authenticate_user!) }
+
   before :each do
     @user = create :user
   end
 
   describe "GET #index" do
-    it "returns a success response" do
-      get :index, params: {}
+    shared_examples "with full access" do
+      it "returns a success response" do
+        get :index, params: {}
 
-      expect(response).to be_successful
-    end
+        expect(response).to be_successful
+      end
 
-    [:admin, :manager].each do |role|
-      context "as #{role}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
+      it "generates a list of users" do
+        create_list :user, 9
 
-        login_user(owner: true)
+        get :index, params: {}
 
-        it "generates a list of users" do
-          create_list :user, 9
-
-          get :index, params: {}
-
-          expect(assigns(:users).count).to be >= 10
-          expect(assigns(:users)).to include(@user)
-        end
+        expect(assigns(:users).count).to be >= 10
+        expect(assigns(:users)).to include(@user)
       end
     end
 
-    context "as a regular user" do
-      login_user(owner: true)
-
+    shared_examples "with restricted access" do
       it "make only own user visible" do
         create_list :user, 9
 
@@ -64,6 +56,24 @@ RSpec.describe UsersController, type: :controller do
 
         expect(assigns(:users)).to eq([@user])
       end
+    end
+
+    context "as an admin" do
+      login_admin(owner: true)
+
+      include_examples "with full access"
+    end
+
+    context "as a manager" do
+      login_manager(owner: true)
+
+      include_examples "with full access"
+    end
+
+    context "as a regular user" do
+      login_user(owner: true)
+
+      include_examples "with restricted access"
     end
   end
 
@@ -79,6 +89,16 @@ RSpec.describe UsersController, type: :controller do
         get :show, params: {id: @user.to_param}
 
         expect(assigns(:user)).to eq(@user)
+      end
+    end
+
+    shared_examples "unauthorized" do
+      it "refuses to show user" do
+        bypass_rescue
+
+        expect {
+          get :show, params: {id: @user.to_param}
+        }.to raise_error(CanCan::AccessDenied)
       end
     end
 
@@ -104,27 +124,25 @@ RSpec.describe UsersController, type: :controller do
       context "with another user's account" do
         login_user
 
-        it "refuses to show user" do
-          bypass_rescue
-
-          expect {
-            get :show, params: {id: @user.to_param}
-          }.to raise_error(CanCan::AccessDenied)
-        end
+        include_examples "unauthorized"
       end
     end
   end
 
   describe "PATCH #set_role" do
-    describe "as an admin" do
-      login_admin
-
+    shared_examples "with authorization" do
       it "updates role of the selected user" do
         expect {
           patch :set_role, params: { id: @user.to_param, user: { role: :manager } }
 
           @user.reload
         }.to change(@user, :role).to('manager')
+      end
+
+      it "redirects back to the users list" do
+        patch :set_role, params: { id: @user.to_param, user: { role: :manager } }
+
+        expect(response).to redirect_to :users
       end
 
       it "refuses to demote themselves" do
@@ -134,20 +152,30 @@ RSpec.describe UsersController, type: :controller do
       end
     end
 
-    [:user, :manager].each do |role|
-      context "as a #{role.to_s}" do
-        before :each do
-          @user.update_attribute :role, role
-        end
-
-        login_user(owner: true)
-
-        it "refuses to change role" do
-          expect {
-            patch :set_role, params: { id: @user.to_param, user: { role: :admin } }
-          }.to avoid_changing(@user, :role)
-        end
+    shared_examples "unauthorized" do
+      it "refuses to change role" do
+        expect {
+          patch :set_role, params: { id: @user.to_param, user: { role: :admin } }
+        }.to avoid_changing(@user, :role)
       end
+    end
+
+    context "as an admin" do
+      login_admin
+
+      include_examples "with authorization"
+    end
+
+    context "as a manager" do
+      login_manager(owner: true)
+
+      include_examples "unauthorized"
+    end
+
+    context "as a regular user" do
+      login_user(owner: true)
+
+      include_examples "unauthorized"
     end
   end
 
@@ -166,6 +194,16 @@ RSpec.describe UsersController, type: :controller do
       end
     end
 
+    shared_examples "unauthorized" do
+      it "refuses to destroy the requested user" do
+        bypass_rescue
+
+        expect {
+          delete :destroy, params: {id: @user.to_param}
+        }.to raise_error(CanCan::AccessDenied).and avoid_changing(User, :count)
+      end
+    end
+
     describe "as an admin" do
       login_admin
 
@@ -181,13 +219,7 @@ RSpec.describe UsersController, type: :controller do
     describe "as a regular user" do
       login_user
 
-      it "refuses to destroy the requested user" do
-        bypass_rescue
-
-        expect {
-          delete :destroy, params: {id: @user.to_param}
-        }.to raise_error(CanCan::AccessDenied).and avoid_changing(User, :count)
-      end
+      include_examples "unauthorized"
     end
   end
 end

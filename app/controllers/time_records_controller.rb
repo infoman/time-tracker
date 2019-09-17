@@ -1,4 +1,5 @@
 class TimeRecordsController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_user
   before_action :set_time_record, only: [:show, :edit, :update, :destroy]
 
