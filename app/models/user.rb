@@ -7,8 +7,8 @@ class User < ApplicationRecord
 
   enum role: [:user, :manager, :admin]
 
-  has_one :profile
-  has_many :time_records
+  has_one :profile, dependent: :destroy
+  has_many :time_records, dependent: :destroy
 
   after_create do |user|
     user.create_profile! unless user.profile.present?

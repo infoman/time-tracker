@@ -1,5 +1,5 @@
 class TimeRecord < ApplicationRecord
-  belongs_to :user, dependent: :destroy
+  belongs_to :user
 
   validates_numericality_of :hours,
     greater_than: 0,

@@ -1,5 +1,5 @@
 class Profile < ApplicationRecord
-  belongs_to :user, dependent: :destroy
+  belongs_to :user
 
   validates_numericality_of :expected_hours,
     only_integer: true,

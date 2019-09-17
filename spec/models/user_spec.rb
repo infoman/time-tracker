@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  it { should have_one(:profile) }
-  it { should have_many(:time_records) }
+  it { should have_one(:profile).dependent(:destroy) }
+  it { should have_many(:time_records).dependent(:destroy) }
   it { should define_enum_for(:role) }
 
   it "should map role id to specific role" do
