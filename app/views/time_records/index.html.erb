@@ -58,7 +58,11 @@
         <tr class="time-record">
           <td><%= time_record.hours %></td>
           <td>
-            <%= truncate time_record.description.lines.first.strip, length: 80, separator: /\s/ %>
+            <% if time_record.description.present? %>
+              <%= truncate time_record.description.lines.first.strip, length: 80, separator: /\s/ %>
+            <% else %>
+              <em>No description</em>
+            <% end %>
             <%= link_to '(more)', [@user, time_record] %>
           </td>
           <td>

@@ -43,4 +43,15 @@ RSpec.describe "time_records/index", type: :view do
 
     assert_select "tr.bg-success>td", text: /#{Date.yesterday}/, count: 1
   end
+
+  it "says 'No description' for empty record description" do
+    empty_record = create :time_record, user: @user, date: Date.today, description: nil
+
+    assign :time_records, [empty_record]
+    assign :dated_records, { Date.today => [empty_record] }
+
+    render
+
+    assert_select "td>em", text: 'No description'
+  end
 end
