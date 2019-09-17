@@ -9,11 +9,18 @@ class TimeRecordsController < ApplicationController
     authorize! :list_time_records, @user
     @filter = DateFilter.new date_filter_params
 
-    @time_records = @user.time_records.order({date: :desc, created_at: :desc})
+    @time_records = @user.time_records
     @time_records = @time_records.where('date >= ?', @filter.from) if @filter.from.present?
     @time_records = @time_records.where('date <= ?', @filter.to) if @filter.to.present?
 
-    @dated_records = @time_records.group_by {|r| r.date}
+    @totals = @time_records.group(:date).sum(:hours).map do |date, hours|
+      [date, OpenStruct.new({
+        hours: hours,
+        sufficient?: (hours >= @user&.profile&.expected_hours.to_i)
+      })]
+    end.to_h
+
+    @dated_records = @time_records.order({date: :desc, created_at: :desc}).group_by {|r| r.date}
   end
 
   # GET /time_records/1

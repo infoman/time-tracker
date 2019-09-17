@@ -67,6 +67,40 @@ RSpec.describe TimeRecordsController, type: :controller do
         expect(assigns(:dated_records)).to include(Date.today, Date.yesterday)
       end
 
+      context "calculates total hours and sufficiency for each date" do
+        before :each do
+          create_list :time_record, 2, user: @user, date: Date.today, hours: 3
+          create_list :time_record, 2, user: @user, date: Date.yesterday, hours: 2
+
+          @user.profile.update_attribute :expected_hours, 5
+        end
+
+        it "generates data for each requested date" do
+          get :index, params: { user_id: @user.id }
+
+          expect(assigns(:totals)).to include(Date.today, Date.yesterday)
+        end
+
+        it "calculates total hours" do
+          get :index, params: { user_id: @user.id }
+
+          expect(assigns(:totals)[Date.today].hours).to eq(6)
+          expect(assigns(:totals)[Date.yesterday].hours).to eq(4)
+        end
+
+        it "marks hours as sufficient if over profile settings" do
+          get :index, params: { user_id: @user.id }
+
+          expect(assigns(:totals)[Date.today].sufficient).to be_truthy
+        end
+
+        it "marks hours as insufficient if below profile settings" do
+          get :index, params: { user_id: @user.id }
+
+          expect(assigns(:totals)[Date.yesterday].sufficient).to be_falsey
+        end
+      end
+
       context "filters time records by date" do
         before :each do
           @past_records    = create_list :time_record, 2, user: @user, date: '2017-01-25'

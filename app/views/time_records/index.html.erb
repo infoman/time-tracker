@@ -39,11 +39,8 @@
 
   <tbody>
     <% @dated_records.each do |date, time_records| %>
-      <% total_hours = time_records.sum {|record| record.hours } %>
-      <% header_class = (total_hours >= @user&.profile&.expected_hours) ? 'success' : 'danger' %>
-
-      <tr class="bg-<%= header_class %> text-light time-total">
-        <th scope="row"><%= total_hours %></th>
+      <tr class="bg-<%= (@totals[date].sufficient?) ? 'success' : 'danger' %> text-light time-total">
+        <th scope="row"><%= @totals[date].hours %></th>
         <td>
           <strong>Total at</strong>
           <%= date %>

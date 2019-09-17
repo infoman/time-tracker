@@ -16,6 +16,15 @@ RSpec.describe "time_records/index", type: :view do
     @time_records = assign :time_records, @today_records + @yesterday_records
     @dated_records = assign :dated_records, @time_records.group_by {|r| r.date}
 
+    @totals = {}
+    @dated_records.each do |date, records|
+      @totals[date] = OpenStruct.new({
+        hours: hours = records.sum {|record| record.hours },
+        sufficient?: hours >= @user&.profile&.expected_hours
+      })
+    end
+    assign :totals, @totals
+
     # index template includes ability checking to draw some buttons
     allow(controller).to receive(:current_ability).and_return(Ability.new(@user))
   end
