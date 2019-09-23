@@ -91,13 +91,13 @@ RSpec.describe TimeRecordsController, type: :controller do
         it "marks hours as sufficient if over profile settings" do
           get :index, params: { user_id: @user.id }
 
-          expect(assigns(:totals)[Date.today].sufficient).to be_truthy
+          expect(assigns(:totals)[Date.today].sufficient?).to be_truthy
         end
 
         it "marks hours as insufficient if below profile settings" do
           get :index, params: { user_id: @user.id }
 
-          expect(assigns(:totals)[Date.yesterday].sufficient).to be_falsey
+          expect(assigns(:totals)[Date.yesterday].sufficient?).to be_falsey
         end
       end
 
