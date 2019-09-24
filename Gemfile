@@ -36,7 +36,7 @@ gem 'bootsnap', '>= 1.4.2', require: false
 gem 'dotenv-rails', '~> 2.7'
 
 # Auth system
-gem 'devise', '~> 4.7'
+gem 'devise', '~> 4.7', '>= 4.7.1'
 gem 'devise-i18n', '~> 1.8'
 gem 'devise-bootstrap-views', '~> 1.1'
 gem 'cancancan', '~> 3.0'
