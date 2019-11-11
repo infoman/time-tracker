@@ -42,7 +42,7 @@ gem 'devise-bootstrap-views', '~> 1.1'
 gem 'cancancan', '~> 3.0'
 
 # Form builder
-gem 'simple_form', '~> 4.1'
+gem 'simple_form', '~> 5.0'
 gem 'enum_help'
 
 # A bit of fun
